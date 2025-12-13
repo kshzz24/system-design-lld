@@ -10,14 +10,20 @@ protected:
     bool isOccupied;
     int floorNumber;
     double distanceFromEntry;
+    bool isReserved;
     Vehicle *vehicle;
 
 public:
-    ParkingSpot(string id, int floor, double distance) : spotId(id), floorNumber(floor), distanceFromEntry(distance),
-                                                         isOccupied(false), vehicle(nullptr) {}
+    ParkingSpot(string id, int floor, double distance) : spotId(id), floorNumber(floor), distanceFromEntry(distance), isReserved(false),
+                                                         isOccupied(false),
+                                                         vehicle(nullptr) {}
     virtual ~ParkingSpot() = default;
     virtual bool canFitVehicle(Vehicle *v) const = 0;
     virtual string getSpotCategory() const = 0;
+    void reserve() { isReserved = true; }
+    void unreserve() { isReserved = false; }
+    bool getIsReserved() const { return isReserved; }
+    bool isAvailable() const { return !isOccupied && !isReserved; }
     bool park(Vehicle *v)
     {
         if (isOccupied || !canFitVehicle(v))
@@ -36,10 +42,7 @@ public:
         isOccupied = false;
         return temp;
     }
-    bool isAvailable() const
-    {
-        return !isOccupied;
-    }
+
     string getId() const { return spotId; }
     int getFloor() const { return floorNumber; }
     double getDistance() const { return distanceFromEntry; }
