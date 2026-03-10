@@ -24,4 +24,26 @@ Bottom-up layered design using 3 design patterns: **Strategy**, **State**, **Obs
 
 ## Concepts & Lessons Learned
 
-*(Will be updated after each code review)*
+### Layer 1 Review — Value Objects & Enums
+
+**1. Enum import location**
+- `Enum` lives in `enum` module, NOT `typing`
+- `typing` is for type hints (`Optional`, `List`, etc.)
+- Correct: `from enum import Enum`
+
+**2. Enums cannot be subclassed once they have members**
+- `class Child(ParentEnum)` raises `TypeError` if `ParentEnum` has values
+- Python enforces this — enums are final once members exist
+- Solution: put everything (values + methods) in one Enum class
+
+**3. Python property system (not Java getter/setter)**
+- Python has NO `@getter` / `@setter` decorators
+- Use `@property` for getter, `@name.setter` for setter
+- Backing field uses underscore: `self._symbol` (private)
+- Property uses clean name: `self.symbol` (public interface)
+- Access: `obj.symbol` not `obj.get_symbol()`
+- Assign: `obj.symbol = val` not `obj.set_symbol(val)`
+
+**4. Type hints are best practice**
+- Annotate constructor params: `def __init__(self, name: str, symbol: Symbol)`
+- Makes code self-documenting and IDE-friendly
