@@ -47,3 +47,30 @@ Bottom-up layered design using 3 design patterns: **Strategy**, **State**, **Obs
 **4. Type hints are best practice**
 - Annotate constructor params: `def __init__(self, name: str, symbol: Symbol)`
 - Makes code self-documenting and IDE-friendly
+
+### Layer 2 Review — Board
+
+**1. Always use `self.` when calling methods inside a class**
+- `initialize_board()` → NameError (looks for global function)
+- `self.initialize_board()` → correct (calls method on current instance)
+
+**2. `and` vs `or` in validation checks**
+- `if row < 0 and row >= size` → impossible, always False
+- `if row < 0 or row >= size` → correct, catches either invalid case
+- Rule: "reject if ANY condition is bad" → use `or`
+
+**3. Class variables vs instance variables**
+- Don't declare class-level variables if they're instance-specific
+- Only use class variables for truly shared data (counters across all instances, constants)
+
+**4. @property is not a method call**
+- `cell.symbol` → correct (property access)
+- `cell.symbol()` → TypeError (calling a Symbol enum, not a function)
+
+**5. Set property, don't replace the object**
+- `self.board[row][col] = symbol` → replaces Cell with Symbol (wrong type in grid)
+- `self.board[row][col].symbol = symbol` → sets Cell's property (correct)
+
+**6. Enum members are ALL CAPS**
+- `Symbol.Empty` → AttributeError
+- `Symbol.EMPTY` → correct
