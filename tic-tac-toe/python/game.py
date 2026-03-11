@@ -6,19 +6,24 @@ from strategies.winning_strategy import WinningStrategy
 from strategies.column_winning_strategy import ColumnWinningStrategy
 from strategies.row_winning_strategy import RowWinningStrategy
 from strategies.diagonal_winning_strategy import DiagonalWinningStrategy
-
-class Game:
+from observers.game_subject import GameSubject
+from states.in_progress_state import InProgressState
+class Game(GameSubject):
     board:Board
     player1: Player
     player2:Player
     current_player:Player
     winner:Player
     status: GameStatus
+  
     winning_strategies:list[WinningStrategy]
 
     def __init__(self, player1, player2, board_size):
+        super().__init__()
         self.board = Board(board_size)
         self.player1 = player1
+        self.winner =None
+        self.state = InProgressState()
         self.player2 = player2
         self.current_player = player1
         self.status = GameStatus.IN_PROGRESS
@@ -45,21 +50,7 @@ class Game:
         
 
     def make_move(self, row, col):
-        if not self.board.place_symbol(row, col, self.current_player.symbol):
-            return False
-
-        current_player_won = self.check_winner(self.current_player, row, col, self.current_player.symbol)
-
-        if current_player_won:
-            self.winner = self.current_player
-            if self.current_player.symbol == Symbol.X:
-                self.status = GameStatus.WINNER_X
-            else:
-                self.status = GameStatus.WINNER_O
-        elif self.board.is_full():
-            self.status = GameStatus.DRAW
-        else:
-            self.switch_player()
+        self.state.handle_move(self, self.current_player, row, col)
 
 
         
