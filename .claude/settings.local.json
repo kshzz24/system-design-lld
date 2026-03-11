@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "Bash(gh api:*)",
+      "Bash(curl -sL -o /tmp/tictactoe-class-diagram.png \"https://raw.githubusercontent.com/ashishps1/awesome-low-level-design/main/class-diagrams/tictactoe-class-diagram.png\")",
+      "Read(//tmp/**)",
+      "Bash(cygpath -w /tmp/tictactoe-class-diagram.png 2>/dev/null || echo \"C:\\\\\\\\Users\\\\\\\\hp\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\tictactoe-class-diagram.png\")"
+    ]
+  }
+}

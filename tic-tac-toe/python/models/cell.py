@@ -1,5 +1,5 @@
 
-from symbol import Symbol
+from models.symbol import Symbol
 class Cell:
 
     def __init__(self):
