@@ -1,5 +1,5 @@
 
-from log_appender import LogAppender
+from appender.log_appender import LogAppender
 from formatter.log_formatter import LogFormatter
 from log_message import LogMessage
 
