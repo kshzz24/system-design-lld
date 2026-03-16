@@ -1,4 +1,5 @@
 
+import threading
 from appender.log_appender import LogAppender
 from formatter.log_formatter import LogFormatter
 from log_message import LogMessage
@@ -11,6 +12,7 @@ class FileAppender(LogAppender):
     def __init__(self,file_path):
         super().__init__()
         self.writer = open(file_path, "a")
+        self._lock = threading.Lock()
 
     @property
     def formatter(self)->LogFormatter:
@@ -22,9 +24,10 @@ class FileAppender(LogAppender):
         self._formatter = formatter
     
     def append(self, message:LogMessage):
-        formatted = self._formatter.format(message)    
-        self.writer.write(formatted + "\n")
-        self.writer.flush()
+        formatted = self._formatter.format(message)
+        with self._lock:
+            self.writer.write(formatted + "\n")
+            self.writer.flush()
     
     def close(self):
          if self.writer:

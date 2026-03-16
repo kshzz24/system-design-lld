@@ -1,3 +1,4 @@
+import threading
 from logger import Logger
 from loglevel import LogLevel
 from async_log_processor import AsyncLogProcessor
@@ -5,6 +6,7 @@ from async_log_processor import AsyncLogProcessor
 
 class LogManager:
     _instance = None
+    _lock = threading.Lock()
 
     def __init__(self):
         self._processor = AsyncLogProcessor()
@@ -13,21 +15,25 @@ class LogManager:
 
         self._loggers: dict[str, Logger] = {}
         self._loggers["root"] = self._root_logger
+        self._loggers_lock = threading.RLock()
 
     @classmethod
     def get_instance(cls):
         if cls._instance is None:
-            cls._instance = LogManager()
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = LogManager()
 
         return cls._instance
 
     def get_logger(self, name: str) -> Logger:
-        if name in self._loggers:
-            return self._loggers[name]
+        with self._loggers_lock:
+            if name in self._loggers:
+                return self._loggers[name]
 
-        logger = self._create_logger(name)
-        self._loggers[name] = logger
-        return logger
+            logger = self._create_logger(name)
+            self._loggers[name] = logger
+            return logger
 
     def _create_logger(self, name: str) -> Logger:
         logger = Logger(name, self._processor)
