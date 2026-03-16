@@ -19,7 +19,7 @@ class Game(GameSubject):
     winning_strategies:list[WinningStrategy]
 
     def __init__(self, player1, player2, board_size):
-        super().__init__()
+        super().__init__()()
         self.board = Board(board_size)
         self.player1 = player1
         self.winner =None

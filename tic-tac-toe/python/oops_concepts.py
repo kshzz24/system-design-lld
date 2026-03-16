@@ -150,7 +150,7 @@ class Animal:
 
 class Dog(Animal):    # Dog inherits from Animal
     def __init__(self, name: str, speed: int, breed: str):
-        super().__init__(name, speed)   # call parent's __init__
+        super().__init__()(name, speed)   # call parent's __init__
         self.breed = breed              # add Dog-specific attribute
 
     # OVERRIDE — replace parent's speak()
@@ -349,9 +349,9 @@ class Vehicle:
 
 class ElectricCar(Vehicle):
     def __init__(self, make: str, model: str, battery_kwh: int):
-        # super().__init__() calls Vehicle.__init__()
+        # super().__init__()() calls Vehicle.__init__()
         # This sets self.make and self.model
-        super().__init__(make, model)
+        super().__init__()(make, model)
         # Then we add ElectricCar-specific attribute
         self.battery_kwh = battery_kwh
 
@@ -367,7 +367,7 @@ print(ev.start())    # "Vehicle started silently (Battery: 75kWh)"
 # WITHOUT super() — what goes wrong:
 # class BadElectricCar(Vehicle):
 #     def __init__(self, make, model, battery_kwh):
-#         # FORGOT to call super().__init__()!
+#         # FORGOT to call super().__init__()()!
 #         self.battery_kwh = battery_kwh
 #
 # bad = BadElectricCar("Tesla", "Model 3", 75)
