@@ -6,6 +6,7 @@ def main():
     # Get singleton instance
     machine = VendingMachine.get_instance()
 
+
     # Stock the machine
     machine.add_item("A1", "Coke", 50, 5)
     machine.add_item("A2", "Pepsi", 45, 3)
