@@ -7,7 +7,7 @@ dist/
 build/
 .eggs/
 *.egg
-
+.claude/
 # Virtual environments
 venv/
 .venv/
@@ -19,6 +19,8 @@ env/
 *.swp
 *.swo
 
+.rtk
+
 # OS
 .DS_Store
 Thumbs.db
@@ -28,3 +30,5 @@ Thumbs.db
 *.exe
 *.out
 *.obj
+
+*.json
