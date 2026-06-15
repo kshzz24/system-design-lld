@@ -9,6 +9,8 @@ from message import Message
 if TYPE_CHECKING:
     from topic import Topic
 
+_SHUTDOWN = object()
+
 
 class Subscription:
     _subscriber: Subscriber
@@ -27,7 +29,12 @@ class Subscription:
     def _drain(self):
         while True:
             message = self._queue.get()
+            if message is _SHUTDOWN:
+                break
             try:
                 self._subscriber.on_message(message)
             except Exception as e:
                 print(f"Error {e} has occurred")
+
+    def close(self) -> None:
+        self._queue.put(_SHUTDOWN)

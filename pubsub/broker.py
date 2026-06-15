@@ -43,5 +43,6 @@ class Broker:
         topic: Topic = self._name_to_topic.get(topic_name)
 
         topic.remove_subscriber(subscription=subscription)
+        subscription.close()
 
         return subscription
