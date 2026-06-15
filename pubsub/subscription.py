@@ -1,14 +1,33 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from dataclasses import dataclass
 from subscriber import Subscriber
+import queue
+import threading
+from message import Message
 
 if TYPE_CHECKING:
     from topic import Topic
 
 
-@dataclass
 class Subscription:
-    subscriber: Subscriber
-    topic: Topic
+    _subscriber: Subscriber
+    _topic: Topic
+
+    def __init__(self, subscriber: Subscriber, topic: Topic) -> None:
+        self._subscriber = subscriber
+        self._topic = topic
+        self._queue: queue.Queue = queue.Queue()
+        self._worker = threading.Thread(target=self._drain, daemon=True)
+        self._worker.start()
+
+    def enqueue(self, message: Message) -> None:
+        self._queue.put(message)
+
+    def _drain(self):
+        while True:
+            message = self._queue.get()
+            try:
+                self._subscriber.on_message(message)
+            except Exception as e:
+                print(f"Error {e} has occurred")
