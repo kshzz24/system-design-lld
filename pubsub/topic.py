@@ -24,9 +24,10 @@ class Topic:
                 return True
             return False
 
-    def fan_out(self, message: Message) -> None:
+    def fan_out(self, message: Message, pool) -> None:
 
         with self._lock:
             snapshot = list(self._subscriptions)
         for subscription in snapshot:
             subscription.enqueue(message)
+            subscription.try_dispatch(pool)

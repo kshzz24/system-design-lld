@@ -1,13 +1,15 @@
-from dataclasses import dataclass, field
 from topic import Topic
 from subscriber import Subscriber
 from subscription import Subscription
 from message import Message
+from concurrent.futures import ThreadPoolExecutor
 
 
-@dataclass
 class Broker:
-    _name_to_topic: dict[str, Topic] = field(default_factory=dict)
+
+    def __init__(self) -> None:
+        self._name_to_topic: dict[str, Topic] = {}
+        self._pool = ThreadPoolExecutor(max_workers=4)
 
     def create_topic(self, topic_name: str) -> Topic:
         if topic_name in self._name_to_topic:
@@ -22,7 +24,7 @@ class Broker:
             raise ValueError(f"Provided {topic_name} Topic does not exist")
 
         topic: Topic = self._name_to_topic.get(topic_name)
-        topic.fan_out(message)
+        topic.fan_out(message, self._pool)
 
     def subscribe(self, topic_name: str, subscriber: Subscriber) -> Subscription:
 
@@ -41,8 +43,6 @@ class Broker:
             raise ValueError(f"Provided {topic_name} Topic does not exist")
 
         topic: Topic = self._name_to_topic.get(topic_name)
-
         topic.remove_subscriber(subscription=subscription)
-        subscription.close()
 
         return subscription
