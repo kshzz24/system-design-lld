@@ -3,6 +3,7 @@ from subscriber import Subscriber
 from subscription import Subscription
 from message import Message
 from concurrent.futures import ThreadPoolExecutor
+from overflow_policy import OverflowPolicy
 
 
 class Broker:
@@ -26,13 +27,21 @@ class Broker:
         topic: Topic = self._name_to_topic.get(topic_name)
         topic.fan_out(message, self._pool)
 
-    def subscribe(self, topic_name: str, subscriber: Subscriber) -> Subscription:
+    def subscribe(
+        self,
+        topic_name: str,
+        subscriber: Subscriber,
+        capacity: int = 1000,
+        policy: OverflowPolicy | None = None,
+    ) -> Subscription:
 
         if topic_name not in self._name_to_topic:
             raise ValueError(f"Provided {topic_name} Topic does not exist")
 
         topic: Topic = self._name_to_topic.get(topic_name)
-        subscription = Subscription(subscriber=subscriber, topic=topic)
+        subscription = Subscription(
+            subscriber=subscriber, topic=topic, capacity=capacity, policy=policy
+        )
         topic.add_subscriber(subscription=subscription)
 
         return subscription

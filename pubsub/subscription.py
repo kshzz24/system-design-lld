@@ -6,6 +6,7 @@ import queue
 from message import Message
 from concurrent.futures import ThreadPoolExecutor
 import threading
+from overflow_policy import OverflowPolicy, DropOldest
 
 if TYPE_CHECKING:
     from topic import Topic
@@ -17,14 +18,24 @@ class Subscription:
     _subscriber: Subscriber
     _topic: Topic
 
-    def __init__(self, subscriber: Subscriber, topic: Topic) -> None:
+    def __init__(
+        self,
+        subscriber: Subscriber,
+        topic: Topic,
+        capacity: int = 1000,
+        policy: OverflowPolicy | None = None,
+    ) -> None:
         self._subscriber = subscriber
         self._topic = topic
         self._claim = threading.Lock()
-        self._queue: queue.Queue = queue.Queue()
+        self._queue: queue.Queue = queue.Queue(maxsize=capacity)
+        self._policy = policy if policy is not None else DropOldest()
 
     def enqueue(self, message: Message) -> None:
-        self._queue.put(message)
+        try:
+            self._queue.put_nowait(message)
+        except queue.Full:
+            self._policy.on_full(self._queue, message)
 
     def try_dispatch(self, pool: ThreadPoolExecutor) -> None:
         if self._claim.acquire(blocking=False):
